@@ -49,6 +49,10 @@ const KYC = () => {
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [idDocumentType, setIdDocumentType] = useState("");
+  const [occupationType, setOccupationType] = useState("");
+  const [businessType, setBusinessType] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [annualIncome, setAnnualIncome] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -83,6 +87,10 @@ const KYC = () => {
         setCity(data.city);
         setPostalCode(data.postal_code);
         setIdDocumentType(data.id_document_type);
+        setOccupationType((data as any).occupation_type || "");
+        setBusinessType((data as any).business_type || "");
+        setJobTitle((data as any).job_title || "");
+        setAnnualIncome((data as any).annual_income || "");
         
         // Load existing document URL
         if (data.document_url) {
@@ -168,8 +176,18 @@ const KYC = () => {
       return;
     }
 
-    if (!firstName || !lastName || !dateOfBirth || !country || !address || !city || !postalCode || !idDocumentType) {
+    if (!firstName || !lastName || !dateOfBirth || !country || !address || !city || !postalCode || !idDocumentType || !occupationType || !annualIncome) {
       toast.error("Please fill all required fields");
+      return;
+    }
+
+    if (occupationType === "business" && !businessType) {
+      toast.error("Please select your business type");
+      return;
+    }
+
+    if (occupationType === "job" && !jobTitle) {
+      toast.error("Please enter your job title");
       return;
     }
 
@@ -205,7 +223,11 @@ const KYC = () => {
         id_document_type: idDocumentType,
         document_url: documentUrl,
         status: 'pending' as const,
-      };
+        occupation_type: occupationType,
+        business_type: occupationType === "business" ? businessType : null,
+        job_title: occupationType === "job" ? jobTitle : null,
+        annual_income: annualIncome,
+      } as any;
 
       if (kycData) {
         // Update existing submission
@@ -454,6 +476,88 @@ const KYC = () => {
                     <SelectItem value="national-id">National ID Card</SelectItem>
                     <SelectItem value="aadhaar">Aadhaar Card</SelectItem>
                     <SelectItem value="pan-card">PAN Card</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Occupation Type */}
+              <div className="space-y-2">
+                <Label htmlFor="occupation-type">Occupation *</Label>
+                <Select value={occupationType} onValueChange={(val) => {
+                  setOccupationType(val);
+                  if (val !== "business") setBusinessType("");
+                  if (val !== "job") setJobTitle("");
+                }}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your occupation" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="student">Student</SelectItem>
+                    <SelectItem value="business">Business</SelectItem>
+                    <SelectItem value="job">Job / Employment</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Business Type - shown when occupation is business */}
+              {occupationType === "business" && (
+                <div className="space-y-2">
+                  <Label htmlFor="business-type">Business Type *</Label>
+                  <Select value={businessType} onValueChange={setBusinessType}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your business type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="retail">Retail / Shop</SelectItem>
+                      <SelectItem value="ecommerce">E-Commerce</SelectItem>
+                      <SelectItem value="manufacturing">Manufacturing</SelectItem>
+                      <SelectItem value="trading">Trading / Import-Export</SelectItem>
+                      <SelectItem value="services">Services / Consulting</SelectItem>
+                      <SelectItem value="technology">Technology / IT</SelectItem>
+                      <SelectItem value="real-estate">Real Estate</SelectItem>
+                      <SelectItem value="agriculture">Agriculture</SelectItem>
+                      <SelectItem value="healthcare">Healthcare</SelectItem>
+                      <SelectItem value="education">Education</SelectItem>
+                      <SelectItem value="food-beverage">Food & Beverage</SelectItem>
+                      <SelectItem value="construction">Construction</SelectItem>
+                      <SelectItem value="transportation">Transportation / Logistics</SelectItem>
+                      <SelectItem value="finance">Finance / Banking</SelectItem>
+                      <SelectItem value="others">Others</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Job Title - shown when occupation is job */}
+              {occupationType === "job" && (
+                <div className="space-y-2">
+                  <Label htmlFor="job-title">Job Title / Designation *</Label>
+                  <Input
+                    id="job-title"
+                    type="text"
+                    placeholder="e.g. Software Engineer, Teacher, Accountant"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+
+              {/* Annual Income */}
+              <div className="space-y-2">
+                <Label htmlFor="annual-income">Annual Income *</Label>
+                <Select value={annualIncome} onValueChange={setAnnualIncome}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your annual income range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="below-1-lakh">Below ₹1 Lakh</SelectItem>
+                    <SelectItem value="1-5-lakh">₹1 Lakh - ₹5 Lakh</SelectItem>
+                    <SelectItem value="5-10-lakh">₹5 Lakh - ₹10 Lakh</SelectItem>
+                    <SelectItem value="10-25-lakh">₹10 Lakh - ₹25 Lakh</SelectItem>
+                    <SelectItem value="25-50-lakh">₹25 Lakh - ₹50 Lakh</SelectItem>
+                    <SelectItem value="50-lakh-1-crore">₹50 Lakh - ₹1 Crore</SelectItem>
+                    <SelectItem value="above-1-crore">Above ₹1 Crore</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

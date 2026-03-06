@@ -113,6 +113,8 @@ export type Database = {
       kyc_submissions: {
         Row: {
           address: string
+          annual_income: string | null
+          business_type: string | null
           city: string
           country: string
           created_at: string
@@ -121,7 +123,9 @@ export type Database = {
           first_name: string
           id: string
           id_document_type: string
+          job_title: string | null
           last_name: string
+          occupation_type: string | null
           postal_code: string
           rejection_reason: string | null
           reviewed_at: string | null
@@ -132,6 +136,8 @@ export type Database = {
         }
         Insert: {
           address: string
+          annual_income?: string | null
+          business_type?: string | null
           city: string
           country: string
           created_at?: string
@@ -140,7 +146,9 @@ export type Database = {
           first_name: string
           id?: string
           id_document_type: string
+          job_title?: string | null
           last_name: string
+          occupation_type?: string | null
           postal_code: string
           rejection_reason?: string | null
           reviewed_at?: string | null
@@ -151,6 +159,8 @@ export type Database = {
         }
         Update: {
           address?: string
+          annual_income?: string | null
+          business_type?: string | null
           city?: string
           country?: string
           created_at?: string
@@ -159,7 +169,9 @@ export type Database = {
           first_name?: string
           id?: string
           id_document_type?: string
+          job_title?: string | null
           last_name?: string
+          occupation_type?: string | null
           postal_code?: string
           rejection_reason?: string | null
           reviewed_at?: string | null
